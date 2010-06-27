@@ -7,6 +7,9 @@ from PMS.Shortcuts import *
 
 VIDEO_PREFIX = "/video/telem1"
 
+MAIN_URL = "http://www.telem1.ch"
+SHOW_LIST_URL = MAIN_URL + "/de/showgrid.html"
+
 NAME = L('Title')
 
 # make sure to replace artwork with what you want
@@ -63,35 +66,38 @@ def VideoMainMenu():
     #  http://dev.plexapp.com/docs/Objects.html#MediaContainer
     dir = MediaContainer(viewGroup="InfoList")
 
-
-    # see:
-    #  http://dev.plexapp.com/docs/Objects.html#DirectoryItem
-    #  http://dev.plexapp.com/docs/Objects.html#function-objects
-    dir.Append(
-        Function(
-            DirectoryItem(
-                CallbackExample,
-                "directory item title",
-                subtitle="subtitle",
-                summary="clicking on me will call CallbackExample",
-                thumb=R(ICON),
-                art=R(ART)
+    xml = XML.ElementFromURL(SHOW_LIST_URL, True)
+    for show in xml.xpath("//div[@id='sidebar']//li[not(contains(@class, 'first'))]"):
+        title = show.xpath("a")[0].text
+        url = show.xpath("a")[0].get('href')
+        Log(title + ": " + url)
+        show_page = XML.ElementFromURL(MAIN_URL + url, True)
+        try:
+            description = show_page.xpath("//div[@class='content']/p")[0].text
+        except:
+            description = None
+        try:
+            thumb = MAIN_URL + show_page.xpath("//div[@class='img-r-Containter']/img")[0].get('src')
+        except:
+            thumb = None
+        dir.Append(
+            Function(
+                DirectoryItem(
+                    ShowDetails,
+                    title,
+                    summary=description,
+                    thumb=thumb,
+                )
             )
         )
-    )
 
 
     # ... and then return the container
     return dir
 
-def CallbackExample(sender):
+def ShowDetails(sender):
+    dir = MediaContainer(viewGroup="InfoList")
 
-    ## you might want to try making me return a MediaContainer
-    ## containing a list of DirectoryItems to see what happens =)
-
-    return MessageContainer(
-        "Not implemented",
-        "In real life, you'll make more than one callback,\nand you'll do something useful.\nsender.itemTitle=%s" % sender.itemTitle
-    )
+    return dir
 
   
