@@ -15,7 +15,7 @@ def gettext(elem):
         if subelem.tail:
             text = text + dedent(subelem.tail)
 
-    return '\n'.join(text.splitlines())
+    return text #'\n'.join(text.splitlines())
 
 ####################################################################################################
 
@@ -65,10 +65,13 @@ def VideoMainMenu():
         title = show.xpath("a")[0].text
         show_url = show.xpath("a")[0].get('href')
         show_page = XML.ElementFromURL(MAIN_URL + show_url, True)
+
+        description = None
         try:
-            description = show_page.xpath("//div[@class='content']/p")[0].text
+            description = gettext(show_page.xpath("//div[@class='content']")[0])
         except:
-            description = None
+            pass
+
         try:
             thumb = MAIN_URL + show_page.xpath("//div[@class='img-r-Containter']/img")[0].get('src')
         except:
