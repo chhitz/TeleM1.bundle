@@ -1,8 +1,3 @@
-# PMS plugin framework
-from PMS import *
-from PMS.Objects import *
-from PMS.Shortcuts import *
-
 from textwrap import dedent
 
 def gettext(elem):
@@ -60,11 +55,11 @@ def Start():
 def VideoMainMenu():
     dir = MediaContainer(viewGroup="InfoList")
 
-    xml = XML.ElementFromURL(SHOW_LIST_URL, True)
+    xml = HTML.ElementFromURL(SHOW_LIST_URL)
     for show in xml.xpath("//div[@id='sidebar']//li[not(contains(@class, 'first'))]"):
         title = show.xpath("a")[0].text
         show_url = show.xpath("a")[0].get('href')
-        show_page = XML.ElementFromURL(MAIN_URL + show_url, True)
+        show_page = HTML.ElementFromURL(MAIN_URL + show_url)
 
         description = None
         try:
@@ -94,7 +89,7 @@ def VideoMainMenu():
 
 
 def RetreiveVideoURL(thread_url, title=None, description=None, thumb=None):
-        thread_page = HTTP.Request(thread_url)
+        thread_page = HTTP.Request(thread_url).content
         thread_lines = thread_page.splitlines()
         url = None
         for line in thread_lines:
@@ -112,7 +107,7 @@ def RetreiveVideoURL(thread_url, title=None, description=None, thumb=None):
 def ShowDetails(sender, url):
     dir = MediaContainer(viewGroup="InfoList")
 
-    show_page = XML.ElementFromURL(MAIN_URL + url, True)
+    show_page = HTML.ElementFromURL(MAIN_URL + url)
     show_number = -1
     for show in show_page.xpath("//div[@class='showContainer']"):
         show_number += 1
@@ -153,7 +148,7 @@ def ShowDetails(sender, url):
 def ShowParts(sender, url, show_number):
     dir = MediaContainer(viewGroup="InfoList")
 
-    show_page = XML.ElementFromURL(MAIN_URL + url, True)
+    show_page = HTML.ElementFromURL(MAIN_URL + url)
     show = show_page.xpath("//div[@class='showContainer']")[show_number]
 
     for thread in show.xpath("div/div/div/ul[@class='showThreads']/li"):
