@@ -30,23 +30,11 @@ ICON          = 'icon-default.png'
 ####################################################################################################
 
 def Start():
-
-    ## make this plugin show up in the 'Video' section
-    ## in Plex. The L() function pulls the string out of the strings
-    ## file in the Contents/Strings/ folder in the bundle
-    ## see also:
-    ##  http://dev.plexapp.com/docs/mod_Plugin.html
-    ##  http://dev.plexapp.com/docs/Bundle.html#the-strings-directory
     Plugin.AddPrefixHandler(VIDEO_PREFIX, VideoMainMenu, L('Title'), ICON, ART)
 
     Plugin.AddViewGroup("InfoList", viewMode="InfoList", mediaType="items")
     Plugin.AddViewGroup("List", viewMode="List", mediaType="items")
 
-    ## set some defaults so that you don't have to
-    ## pass these parameters to these object types
-    ## every single time
-    ## see also:
-    ##  http://dev.plexapp.com/docs/Objects.html
     MediaContainer.art = R(ART)
     MediaContainer.title1 = NAME
     DirectoryItem.thumb = R(ICON)
